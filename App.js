@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Button, TextInput, Alert } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
 import { AsyncStorage } from 'react-native';
-const buildings = require('./buildings.json')
+const buildings = require("./buildings.json");
 
 export default class App extends Component {
   async componentDidMount(){
-    //await AsyncStorage.clear();
-
     try{
+      /*await AsyncStorage.clear();
+      console.log(buildings[0]);*/
       const time = await AsyncStorage.getItem("timeStamp");
       if(time == null){
         await AsyncStorage.setItem("timeStamp", new Date().toLocaleString());
-        await AsyncStorage.multiSet(["Ceer", JSON.stringify(buildings[0])], ["Bartley", JSON.stringify(buildings[1])], ["Mendel", JSON.stringify(buildings[2])], ["Falvey", JSON.stringify(buildings[3])]);
+        await AsyncStorage.multiSet([["Ceer", JSON.stringify(buildings[0])], ["Bartley", JSON.stringify(buildings[1])], ["Mendel", JSON.stringify(buildings[2])], ["Falvey", JSON.stringify(buildings[3])]]);
       }
     }
     catch(error){
@@ -21,7 +21,7 @@ export default class App extends Component {
   render(){
     return (
       <View style={styles.container}>
-        <Home/>
+          <Home/>
       </View>
     );
   }
@@ -31,11 +31,13 @@ class Home extends Component{
   constructor(props){
     super(props);
     var timeStamp = new Date().toLocaleString();
-    this.state = {date: timeStamp, inputLongitude: '', inputLatitude: '', latitude: '', longitude: '', building: '', fact: ''};
+    this.state = {date: timeStamp, inputLongitude: '', inputLatitude: '', latitude: '', longitude: '', building: '', fact: '', dataTime: ''};
 
     this.buttonPress= this.buttonPress.bind(this);
     this.onChangeLong = this.onChangeLong.bind(this);
     this.onChangeLat = this.onChangeLat.bind(this);
+    this.distance = this.distance.bind(this);
+    this.randomFact = this.randomFact.bind(this);
   }
 
   componentDidMount(){
@@ -66,7 +68,9 @@ class Home extends Component{
       var bartley = await AsyncStorage.getItem("Bartley");
       var mendel = await AsyncStorage.getItem("Mendel");
       var falvey = await AsyncStorage.getItem("Falvey");
+      console.log(ceer);
       ceer = JSON.parse(ceer);
+      console.log(ceer);
       bartley = JSON.parse(bartley);
       mendel = JSON.parse(mendel);
       falvey = JSON.parse(falvey);
@@ -79,9 +83,10 @@ class Home extends Component{
     var distMendel = this.distance(this.state.inputLongitude, this.state.inputLatitude, mendel["Longitude"], mendel["Latitude"]);
     var distFalvey = this.distance(this.state.inputLongitude, this.state.inputLatitude, falvey["Longitude"], falvey["Latitude"]);
 
-    var distances = [distCeer, distBartely, distMendel, distFalvey];
+    var distances = [distCeer, distBartley, distMendel, distFalvey];
+    console.log(distances);
     var minimum = Math.min(...distances);
-    distances ={"ceer": distCeer, "bartley": distBartley, "mendel": distMendel, "falvey": distFalvey};
+    distances ={"Ceer": distCeer, "Bartley": distBartley, "Mendel": distMendel, "Falvey": distFalvey};
 
     var minBuild;
     for(var key in distances){
@@ -96,14 +101,18 @@ class Home extends Component{
     }
     catch (error){
     }
-
     var randFact = this.randomFact(building.Facts);
 
-    this.setState({building: minBuild, fact: randFact})
+    try{
+      var time = await AsyncStorage.getItem("timeStamp");
+    }
+    catch (error){}
+
+    this.setState({building: minBuild, fact: randFact, dataTime: time})
   }
 
   distance(inputLongitude, inputLatitude, buildLong, buildLat){
-    var dist = Math.sqrt(Math.pow(inputLongitude+buildLong, 2) + Math.pow(inputLatitude+buildLat, 2));
+    var dist = Math.sqrt(Math.pow(inputLongitude-buildLong, 2) + Math.pow(inputLatitude-buildLat, 2));
     return dist;
   }
 
@@ -115,22 +124,23 @@ class Home extends Component{
   render(){
     return(
       <View>
-        <View style={styles.container}>
-          <Text style={styles.title}>Villanova University Interactive Tour</Text>
-          <Text> </Text>
-          <Text> Enter longitude </Text>
-          <TextInput style={styles.inputBox} onChangeText={this.onChangeLong}/>
-          <Text> Enter latitude </Text>
-          <TextInput style={styles.inputBox} onChangeText={this.onChangeLat}/>
-          <Button style={styles.button} onPress={this.buttonPress} title="Tell Me About My Location"/>
-          <Text> {this.state.inputLongitude} </Text>
-          <Text> {this.state.inputLatitude} </Text>
-          <Text> {this.state.building} </Text>
-          <Text> {this.state.fact} </Text>
-        </View>
-        <View style={styles.timestamp}>
-          <Text> {this.state.date} </Text>
-        </View>
+          <View style={styles.container}>
+            <Text style={styles.title}>Villanova University Interactive Tour</Text>
+            <Text> </Text>
+            <Text> Enter longitude </Text>
+            <TextInput style={styles.inputBox} onChangeText={this.onChangeLong}/>
+            <Text> Enter latitude </Text>
+            <TextInput style={styles.inputBox} onChangeText={this.onChangeLat}/>
+            <Button style={styles.button} onPress={this.buttonPress} title="Tell Me About My Location"/>
+            <Text> {this.state.inputLongitude} </Text>
+            <Text> {this.state.inputLatitude} </Text>
+            <Text> {this.state.building} </Text>
+            <Text> {this.state.fact} </Text>
+            <Text> {this.state.dataTime} </Text>
+          </View>
+          <View style={styles.timestamp}>
+            <Text> {this.state.date} </Text>
+          </View>
       </View>
     )
   }
@@ -165,4 +175,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#0000FF',
   },
+
+  image: {
+    flex: 1,
+   resizeMode: "cover",
+   justifyContent: "center"
+  }
 });
