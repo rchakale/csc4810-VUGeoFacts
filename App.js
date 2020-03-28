@@ -78,10 +78,10 @@ class Home extends Component{
     catch (error){
     }
 
-    var distCeer = this.distance(this.state.inputLongitude, this.state.inputLatitude, ceer["Longitude"], ceer["Latitude"]);
-    var distBartley = this.distance(this.state.inputLongitude, this.state.inputLatitude, bartley["Longitude"], bartley["Latitude"]);
-    var distMendel = this.distance(this.state.inputLongitude, this.state.inputLatitude, mendel["Longitude"], mendel["Latitude"]);
-    var distFalvey = this.distance(this.state.inputLongitude, this.state.inputLatitude, falvey["Longitude"], falvey["Latitude"]);
+    var distCeer = this.distance(this.state.longitude, this.state.latitude, ceer["Longitude"], ceer["Latitude"]);
+    var distBartley = this.distance(this.state.longitude, this.state.latitude, bartley["Longitude"], bartley["Latitude"]);
+    var distMendel = this.distance(this.state.longitude, this.state.latitude, mendel["Longitude"], mendel["Latitude"]);
+    var distFalvey = this.distance(this.state.longitude, this.state.latitude, falvey["Longitude"], falvey["Latitude"]);
 
     var distances = [distCeer, distBartley, distMendel, distFalvey];
     console.log(distances);
@@ -127,13 +127,9 @@ class Home extends Component{
           <View style={styles.container}>
             <Text style={styles.title}>Villanova University Interactive Tour</Text>
             <Text> </Text>
-            <Text> Enter longitude </Text>
-            <TextInput style={styles.inputBox} onChangeText={this.onChangeLong}/>
-            <Text> Enter latitude </Text>
-            <TextInput style={styles.inputBox} onChangeText={this.onChangeLat}/>
             <Button style={styles.button} onPress={this.buttonPress} title="Tell Me About My Location"/>
-            <Text> {this.state.inputLongitude} </Text>
-            <Text> {this.state.inputLatitude} </Text>
+            <Text> {this.state.longitude} </Text>
+            <Text> {this.state.latitude} </Text>
             <Text> {this.state.building} </Text>
             <Text> {this.state.fact} </Text>
             <Text> {this.state.dataTime} </Text>
